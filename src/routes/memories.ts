@@ -93,6 +93,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
     return { "msg": "Memoria apagada"}
 
   });
+  
   app.put("/memories/:id", async (req, res) => {
     const bodySchema = z.object({
       content: z.string(),
