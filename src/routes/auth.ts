@@ -1,17 +1,16 @@
-import { FastifyInstance } from "fastify";
+/* eslint-disable prettier/prettier */
+import { FastifyInstance } from 'fastify'
 import axios from 'axios'
 import { z } from 'zod'
-import { prisma } from "../lib/prisma";
+import { prisma } from '../lib/prisma'
 
-export async function authRoutes(app: FastifyInstance){
-  app.post('/register', async(req) =>{
+export async function authRoutes(app: FastifyInstance) {
+  app.post('/register', async (req) => {
     const bodySchema = z.object({
       code: z.string(),
     })
 
     const { code } = bodySchema.parse(req.body)
-
-    
 
     const accessTokenResponse = await axios.post(
       'https://github.com/login/oauth/access_token',
@@ -24,16 +23,18 @@ export async function authRoutes(app: FastifyInstance){
         },
         headers: {
           Accept: 'application/json',
-        }
-      }
+        },
+      },
     )
 
+    // eslint-disable-next-line camelcase
     const { access_token } = accessTokenResponse.data
-    
-    const userResponse = await axios.get("https://api.github.com/user",{
+
+    const userResponse = await axios.get('https://api.github.com/user', {
       headers: {
+        // eslint-disable-next-line camelcase
         Authorization: `Bearer ${access_token}`,
-      }
+      },
     })
 
     const userSchema = z.object({
@@ -44,8 +45,7 @@ export async function authRoutes(app: FastifyInstance){
     })
 
     const userInfo = userSchema.parse(userResponse.data)
-    
-    
+
     let user = await prisma.user.findUnique({
       where: {
         githubId: userInfo.id,
@@ -76,5 +76,5 @@ export async function authRoutes(app: FastifyInstance){
     return {
       token,
     }
-  } )
+  })
 }
